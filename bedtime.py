@@ -85,21 +85,25 @@ def main():
     else:
         print (f"Average timeVal: {getAverageBedtime(times)}")
 
-    #print(sanitiseTime("1:35"))
-    #print (getTimeValue("01:00"))
-    print (f"Time of timeVal 0: {timeValToTime(0)}")
-
     timeVals = list( map (getTimeValue, times) )
 
     xTicks = []
     for i in range(1, len(timeVals)+1):
         xTicks.append(i)
 
-    print(f"xTicks: {xTicks}")
-
     plt.title(f"Average time: {timeValToTime(getAverageBedtime(times))}")
     plt.plot(xTicks, timeVals)
-    plt.yticks(timeVals, times)
+
+    #print("CURRENT Y LIM: " + str(plt.ylim()))
+
+    ylocs, _ = plt.yticks() # Gets values used as y axis
+
+    # Creates a list of time strings converted from y axis values:
+    ylabels = [timeValToTime(y) for y in ylocs]
+
+    # Despite documentation referring to an array of Text objects for labels,
+    # a list of strings will serve:
+    plt.yticks(ylocs, ylabels)  # Sets time labels for y axis!
     plt.show()
 
 
