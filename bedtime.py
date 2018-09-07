@@ -27,7 +27,7 @@ def timeValToTime(timeVal):
         minute = f"0{minute}"
     return str(hour) + ":" + minute
 
-def sanitiseTime (time):
+def sanitiseTime(time):
     # If colon is in position 1 (second character), leading zero is prepended:
     if (time.find(":") == 1):
         time = f"0{time}"
@@ -35,6 +35,11 @@ def sanitiseTime (time):
     if (time[0:2] == "12"):
         time = f"00{time[2:]}"
     return time
+
+
+# TODO: Write validation function for time, so it isn't saved to file if inavlid
+#def validateTime(time):
+
 
 def getAverageBedtime(times):
     timeVals = list( map (getTimeValue, times) )
@@ -46,20 +51,20 @@ def main():
     try:
         f = open("times.txt", "r")
         times = f.read().split("\n")
-        if (times[0] == ""):
-            times = []
-
         f.close()
         print ("(Times file exists)")
+
     except IOError:
         f = open("times.txt","w")
         f.close()
         times = []
         print("(Times file created)")
 
+    # Filters out blank lines, generated from "empty" file:
+    times = [x for x in times if x != ""]
+
     # If new time has been entered as parameter to the program:
     if (len(sys.argv) > 1):
-        print(f"Unsanitised newTime - {sys.argv[1]}")
         newTime = sanitiseTime(sys.argv[1])
         print(f"Sanitised newTime - {newTime}")
         print (f"Hello World! Tonight's time: {newTime}")
@@ -80,11 +85,15 @@ def main():
         print ("No time entered, just peeking")
 
     print (times)
-    if (times[0] == ""):
+    if (times == []):
         print ("No times in file.")
     else:
         print (f"Average timeVal: {getAverageBedtime(times)}")
+        plotBedtimes(times)
 
+
+# Plots graph of bedtimes over time:
+def plotBedtimes(times):
     timeVals = list( map (getTimeValue, times) )
 
     xTicks = []
@@ -105,6 +114,15 @@ def main():
     # a list of strings will serve:
     plt.yticks(ylocs, ylabels)  # Sets time labels for y axis!
     plt.show()
+
+
+def filterList(list):
+    print(f"List: {list}")
+
+    # Filters out blank lines, generated from "empty" file:
+    list = [x for x in list if isinstance(x, int)]
+
+    print(f"New list: {list}")
 
 
 def timeTests(times):
