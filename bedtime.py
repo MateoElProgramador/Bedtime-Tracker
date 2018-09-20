@@ -100,6 +100,8 @@ def plotBedtimes(times):
     for i in range(1, len(timeVals)+1):
         xTicks.append(i)
 
+    plt.xticks(xTicks)
+
     plt.title(f"Average time: {timeValToTime(getAverageBedtime(times))}")
     plt.plot(xTicks, timeVals)
 
@@ -107,7 +109,7 @@ def plotBedtimes(times):
 
     ylocs, _ = plt.yticks() # Gets values used as y axis
 
-    # Creates a list of time strings converted from y axis values:
+    # Creates a list of time strings converted from y axis values (list comprehension!):
     ylabels = [timeValToTime(y) for y in ylocs]
 
     # Despite documentation referring to an array of Text objects for labels,
