@@ -3,6 +3,8 @@ import sys
 import datetime
 import matplotlib.pyplot as plt
 
+TIMES_FILENAME = "times.txt"
+
 def getTimeValue(time):
     #time = sanitiseTime(time)   # Sanitise time first
     hour = int(time[0:2])
@@ -50,13 +52,13 @@ def getAverageBedtime(times):
 
 def main():
     try:
-        f = open("times.txt", "r")
+        f = open(TIMES_FILENAME, "r")
         times = f.read().split("\n")
         f.close()
         print ("(Times file exists)")
 
     except IOError:
-        f = open("times.txt","w")
+        f = open(TIMES_FILENAME,"w")
         f.close()
         times = []
         print("(Times file created)")
@@ -70,14 +72,14 @@ def main():
         print(f"Sanitised newTime - {newTime}")
         print (f"Hello World! Tonight's time: {newTime}")
 
-        f = open("times.txt", "a")
+        f = open(TIMES_FILENAME, "a")
 
         # To prevent blank first line of a new times file being part of the list:
         if (times == []):
-            # Adds new time (on first line) to times.txt:
+            # Adds new time (on first line) to times txt file:
             f.write(newTime)
         else:
-            # Adds new time to times.txt:
+            # Adds new time to times txt file:
             f.write(f"\n{newTime}")
 
         times.append(newTime)   # Add new time to times list
@@ -94,6 +96,8 @@ def main():
 
 
 # Plots graph of bedtimes over time:
+# TODO Make y axis labels round times (e.g. 1:00, 2:00 etc.)
+
 def plotBedtimes(times):
     timeVals = list( map (getTimeValue, times) )
 
