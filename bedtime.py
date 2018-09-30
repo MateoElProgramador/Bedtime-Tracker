@@ -1,5 +1,6 @@
 import statistics as stat
 import sys
+import datetime
 import matplotlib.pyplot as plt
 
 def getTimeValue(time):
@@ -37,7 +38,7 @@ def sanitiseTime(time):
     return time
 
 
-# TODO: Write validation function for time, so it isn't saved to file if inavlid
+# TODO: Write validation function for time, so it isn't saved to file if invalid
 #def validateTime(time):
 
 
@@ -97,10 +98,22 @@ def plotBedtimes(times):
     timeVals = list( map (getTimeValue, times) )
 
     xTicks = []
-    for i in range(1, len(timeVals)+1):
+    xLabels = []
+
+
+    FIRST_DATE = datetime.date(2018, 9, 15)
+    xLabels.append(FIRST_DATE.strftime('%d/%m'))
+    xTicks.append(1)
+
+    date = FIRST_DATE
+
+    for i in range(2, len(timeVals)+1):
+        date += datetime.timedelta(days=1)
+        xLabels.append(date.strftime('%d/%m'))
+
         xTicks.append(i)
 
-    plt.xticks(xTicks)
+    plt.xticks(xTicks, xLabels)
 
     plt.title(f"Average time: {timeValToTime(getAverageBedtime(times))}")
     plt.plot(xTicks, timeVals)
