@@ -46,7 +46,6 @@ def sanitiseTime(time):
 
 def getAverageBedtime(times):
     timeVals = list( map (getTimeValue, times) )
-    print(f"TimeVals: {timeVals}")
     return stat.mean(timeVals)
 
 
@@ -87,11 +86,12 @@ def main():
     else:
         print ("No time entered, just peeking")
 
-    print (times)
+    print ("Times:")
+    for time in times:
+        print(time)
     if (times == []):
         print ("No times in file.")
     else:
-        print (f"Average timeVal: {getAverageBedtime(times)}")
         plotBedtimes(times)
 
 
@@ -101,6 +101,7 @@ def main():
 def plotBedtimes(times):
     # Gets timeVals of time strings from txt file:
     timeVals = list( map (getTimeValue, times) )
+    print(f"TimeVals: {timeVals}")
 
     xTicks = []
     xLabels = []
@@ -122,32 +123,39 @@ def plotBedtimes(times):
     plt.title(f"Average time: {timeValToTime(getAverageBedtime(times))}")
     plt.plot(xTicks, timeVals)
 
-
-
-    print("Current y ticks: " + str(plt.yticks()))
     print("Current y lim: " + str(plt.ylim()))
 
-    # Find minimum timeVal in times
-    # 'Round down' to round time (to the hour)
-        # Set as minimum ytick
+    yTicks = []
+    minTimeLim, maxTimeLim = plt.ylim()
 
-    # Increment by 60, and set as next yTick
-        # Until larger than maximum timeVal in times
+    # 'Rounds down' minimum time limit to the nearest hour:
+    #minTimeLim = (minTimeLim // 60) * 60       # Using the ylim already generated
+    minTimeLim = (min(timeVals) // 60) * 60     # Using the lowest timeVal data point
+
+    # 'Rounds up' maximum time limit to the nearest hour:
+    #maxTimeLim = (((maxTimeLim // 60)) * 60) + 60  # Using the ylim already generated
+    maxTimeLim = ((max(timeVals) // 60) * 60) + 60  # Using the greatest timeVal data point
 
 
-    
+    time = minTimeLim
+    yTicks.append(time) # First ytick value is appended to the list
 
+    Y_AXIS_INCREMENT = 30
+    # Increment by Y_AXIS_INCREMENT and set as next yTick, until greater than maximum time limit:
+    while (time < maxTimeLim):
+        time += Y_AXIS_INCREMENT
+        yTicks.append(time)
 
-
-    ylocs, _ = plt.yticks() # Gets values used as y axis
+    #ylocs, _ = plt.yticks() # Gets values used as y axis
 
     # Creates a list of time strings converted from y axis values (list comprehension!):
-    ylabels = [timeValToTime(y) for y in ylocs]
+    yLabels = [timeValToTime(y) for y in yTicks]
 
     # Despite documentation referring to an array of Text objects for labels,
     # a list of strings will serve:
-    plt.yticks(ylocs, ylabels)  # Sets time labels for y axis!
+    plt.yticks(yTicks, yLabels)  # Sets time labels for y axis!
     plt.show()
+
 
 
 def filterList(list):
