@@ -99,22 +99,22 @@ def main():
 # TODO Make y axis labels round times (e.g. 1:00, 2:00 etc.)
 
 def plotBedtimes(times):
+    # Gets timeVals of time strings from txt file:
     timeVals = list( map (getTimeValue, times) )
 
     xTicks = []
     xLabels = []
 
 
-    FIRST_DATE = datetime.date(2018, 9, 15)
-    xLabels.append(FIRST_DATE.strftime('%d/%m'))
-    xTicks.append(1)
+    FIRST_DATE = datetime.date(2018, 9, 15)     # First date that bedtime is recorded
+    xLabels.append(FIRST_DATE.strftime('%d/%m'))    # The first xLabel is assigned
+    xTicks.append(1)    # xTicks seems to need a list of numbers of length len(timeVals)
 
     date = FIRST_DATE
 
     for i in range(2, len(timeVals)+1):
-        date += datetime.timedelta(days=1)
+        date += datetime.timedelta(days=1)  # Date is incremented by 1 day
         xLabels.append(date.strftime('%d/%m'))
-
         xTicks.append(i)
 
     plt.xticks(xTicks, xLabels)
@@ -122,7 +122,22 @@ def plotBedtimes(times):
     plt.title(f"Average time: {timeValToTime(getAverageBedtime(times))}")
     plt.plot(xTicks, timeVals)
 
-    #print("CURRENT Y LIM: " + str(plt.ylim()))
+
+
+    print("Current y ticks: " + str(plt.yticks()))
+    print("Current y lim: " + str(plt.ylim()))
+
+    # Find minimum timeVal in times
+    # 'Round down' to round time (to the hour)
+        # Set as minimum ytick
+
+    # Increment by 60, and set as next yTick
+        # Until larger than maximum timeVal in times
+
+
+    
+
+
 
     ylocs, _ = plt.yticks() # Gets values used as y axis
 
