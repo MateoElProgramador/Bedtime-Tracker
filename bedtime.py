@@ -92,16 +92,15 @@ def main():
     if (times == []):
         print ("No times in file.")
     else:
-        plotBedtimes(times)
-
+        plotBedtimes(times, "all")
+        plotBedtimes(times, "weekly")
+        plt.show()
 
 # Plots graph of bedtimes over time:
-def plotBedtimes(times):
+def plotBedtimes(times, view):
     # Gets timeVals of time strings from txt file:
     timeVals = list( map (getTimeValue, times) )
     print(f"TimeVals: {timeVals}")
-
-    view = "weekly"
 
     xTicks = []
     xLabels = []
@@ -123,7 +122,9 @@ def plotBedtimes(times):
 
 
     # For weekly view (since last Monday):
+    # TODO Optimise reversal of list for finding last Monday
     if (view == "weekly"):
+        plt.subplot(2, 1, 2)
         # Get all days for dates:
         days = [d.strftime('%A') for d in dates]
         # Find position in dates where the last Monday features:
@@ -135,7 +136,10 @@ def plotBedtimes(times):
         xTicks = xTicks[lastMonPos:]
         xLabels = xLabels[lastMonPos:]
         timeVals = timeVals[lastMonPos:]
-
+        print("New timeVals:")
+        print(timeVals)
+    else:
+        plt.subplot(2, 1, 1)
 
     plt.xticks(xTicks, xLabels)
 
@@ -145,7 +149,7 @@ def plotBedtimes(times):
     #print("Current y lim: " + str(plt.ylim()))
 
     setYTicks(timeVals)
-    plt.show()
+
 
 
 # Finds and sets the labels for the y axis, using round times:
