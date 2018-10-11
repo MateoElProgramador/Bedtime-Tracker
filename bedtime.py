@@ -151,7 +151,6 @@ def plotBedtimes(times, view):
     setYTicks(timeVals)
 
 
-
 # Finds and sets the labels for the y axis, using round times:
 def setYTicks(timeVals):
     yTicks = []
@@ -160,6 +159,13 @@ def setYTicks(timeVals):
     # 'Rounds down' minimum time limit to the nearest hour:
     #minTimeLim = (minTimeLim // 60) * 60       # Using the ylim already generated
     minTimeLim = (min(timeVals) // 60) * 60     # Using the lowest timeVal data point
+
+    print("Min time lim: " + str(minTimeLim) + " (" + str(timeValToTime(minTimeLim)) + ")")
+
+    if (minTimeLim < getTimeValue("23:00")):
+        print("Min time ytick and ylim changed")
+        minTimeLim = getTimeValue("23:00")
+        plt.ylim(minTimeLim, maxTimeLim)
 
     # 'Rounds up' maximum time limit to the nearest hour:
     #maxTimeLim = (((maxTimeLim // 60)) * 60) + 60  # Using the ylim already generated
@@ -181,6 +187,11 @@ def setYTicks(timeVals):
     # Despite documentation referring to an array of Text objects for labels,
     # a list of strings will serve:
     plt.yticks(yTicks, yLabels)  # Sets time labels for y axis!
+
+    # Gets current axes:
+    ax = plt.gca()
+    # Sets tick params of y axis to display ticks and tick labels on right side as well as left:
+    ax.tick_params(axis='y', right=True, labelright=True)
 
 
 def filterList(list):
