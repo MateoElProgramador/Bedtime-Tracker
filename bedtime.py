@@ -4,6 +4,7 @@ import datetime
 import matplotlib.pyplot as plt
 
 TIMES_FILENAME = "times.txt"
+YTICK_OFFSET = 10
 
 def getTimeValue(time):
     #time = sanitiseTime(time)   # Sanitise time first
@@ -100,7 +101,7 @@ def main():
 def plotBedtimes(times, view):
     # Gets timeVals of time strings from txt file:
     timeVals = list( map (getTimeValue, times) )
-    print(f"TimeVals: {timeVals}")
+    #print(f"TimeVals: {timeVals}")
 
     xTicks = []
     xLabels = []
@@ -129,8 +130,8 @@ def plotBedtimes(times, view):
         days = [d.strftime('%A') for d in dates]
         # Find position in dates where the last Monday features:
         lastMonPos = (len(days) - 1) - (list(reversed(days)).index("Monday"))
-        print(days)
-        print("Position of last Monday: " + str(lastMonPos))
+        #print(days)
+        #print("Position of last Monday: " + str(lastMonPos))
 
         # Slice lists to only account for since last Monday:
         xTicks = xTicks[lastMonPos:]
@@ -158,26 +159,30 @@ def setYTicks(timeVals):
 
     # 'Rounds down' minimum time limit to the nearest hour:
     #minTimeLim = (minTimeLim // 60) * 60       # Using the ylim already generated
-    minTimeLim = (min(timeVals) // 60) * 60     # Using the lowest timeVal data point
+    minTimeLim = ((min(timeVals) // 60) * 60) - YTICK_OFFSET     # Using the lowest timeVal data point
 
     print("Min time lim: " + str(minTimeLim) + " (" + str(timeValToTime(minTimeLim)) + ")")
 
     if (minTimeLim < getTimeValue("23:00")):
         print("Min time ytick and ylim changed")
-        minTimeLim = getTimeValue("23:00")
-        plt.ylim(minTimeLim, maxTimeLim)
+        minTimeLim = getTimeValue("23:00") - YTICK_OFFSET
+
+
 
     # 'Rounds up' maximum time limit to the nearest hour:
     #maxTimeLim = (((maxTimeLim // 60)) * 60) + 60  # Using the ylim already generated
-    maxTimeLim = ((max(timeVals) // 60) * 60) + 60  # Using the greatest timeVal data point
+    maxTimeLim = ((max(timeVals) // 60) * 60) + 60 + YTICK_OFFSET  # Using the greatest timeVal data point
 
+    print(f"Old ylims: {plt.ylim()}")
+    plt.ylim(minTimeLim, maxTimeLim)
+    print(f"New ylims: {plt.ylim()}")
 
-    time = minTimeLim
+    time = minTimeLim + YTICK_OFFSET
     yTicks.append(time) # First ytick value is appended to the list
 
     Y_AXIS_INCREMENT = 30
     # Increment by Y_AXIS_INCREMENT and set as next yTick, until greater than maximum time limit:
-    while (time < maxTimeLim):
+    while (time < (maxTimeLim - YTICK_OFFSET)):
         time += Y_AXIS_INCREMENT
         yTicks.append(time)
 
@@ -192,6 +197,21 @@ def setYTicks(timeVals):
     ax = plt.gca()
     # Sets tick params of y axis to display ticks and tick labels on right side as well as left:
     ax.tick_params(axis='y', right=True, labelright=True)
+
+def correctYMinSkew(timeVals, maxTimeLim):
+    minTime = min(timeVals)
+
+    # 'Rounds down' minimum time limit to the nearest hour:
+    #minTimeLim = (minTimeLim // 60) * 60       # Using the ylim already generated
+    minTimeLim = (minTime // 60) * 60     # Using the lowest timeVal data point
+
+    print("Min time lim: " + str(minTimeLim) + " (" + str(timeValToTime(minTimeLim)) + ")")
+
+    if (minTimeLim < getTimeValue("23:00")):
+        print("Min time ytick and ylim changed")
+        minTimeLim = correctYMinSkew(timeVals.remove(minTime), maxTimeLim)  # Method recursively calls itself until minTimeLim >= 23:00
+    else:
+        plt.ylim(minTimeLim, maxTimeLim)
 
 
 def filterList(list):
