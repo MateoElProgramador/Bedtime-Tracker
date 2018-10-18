@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 TIMES_FILENAME = "times.txt"
 YTICK_OFFSET = 10
+MIN_TIME_THRESHOLD = "23:30"
 
 def getTimeValue(time):
     #time = sanitiseTime(time)   # Sanitise time first
@@ -159,30 +160,32 @@ def setYTicks(timeVals):
 
     # 'Rounds down' minimum time limit to the nearest hour:
     #minTimeLim = (minTimeLim // 60) * 60       # Using the ylim already generated
-    minTimeLim = ((min(timeVals) // 60) * 60) - YTICK_OFFSET     # Using the lowest timeVal data point
+    #minTimeLim = ((min(timeVals) // 60) * 60) - YTICK_OFFSET     # Using the lowest timeVal data point
 
-    print("Min time lim: " + str(minTimeLim) + " (" + str(timeValToTime(minTimeLim)) + ")")
+    print("Default min time lim: " + str(minTimeLim) + " (" + str(timeValToTime(minTimeLim)) + ")")
 
-    if (minTimeLim < getTimeValue("23:00")):
-        print("Min time ytick and ylim changed")
-        minTimeLim = getTimeValue("23:00") - YTICK_OFFSET
+    # if (minTimeLim < getTimeValue("23:00")):
+    #     print("Min time ytick and ylim changed")
+    #     minTimeLim = getTimeValue("23:00") - YTICK_OFFSET
 
-
+    minTimeLim = correctYMinSkew(timeVals, maxTimeLim)
 
     # 'Rounds up' maximum time limit to the nearest hour:
     #maxTimeLim = (((maxTimeLim // 60)) * 60) + 60  # Using the ylim already generated
-    maxTimeLim = ((max(timeVals) // 60) * 60) + 60 + YTICK_OFFSET  # Using the greatest timeVal data point
+    maxTimeLim = ((max(timeVals) // 60) * 60) + 60  # Using the greatest timeVal data point
 
-    print(f"Old ylims: {plt.ylim()}")
-    plt.ylim(minTimeLim, maxTimeLim)
-    print(f"New ylims: {plt.ylim()}")
 
-    time = minTimeLim + YTICK_OFFSET
+
+    #print(f"Old ylims: {plt.ylim()}")
+    #plt.ylim(minTimeLim, maxTimeLim)
+    #print(f"New ylims: {plt.ylim()}")
+
+    time = minTimeLim
     yTicks.append(time) # First ytick value is appended to the list
 
     Y_AXIS_INCREMENT = 30
     # Increment by Y_AXIS_INCREMENT and set as next yTick, until greater than maximum time limit:
-    while (time < (maxTimeLim - YTICK_OFFSET)):
+    while (time < maxTimeLim):
         time += Y_AXIS_INCREMENT
         yTicks.append(time)
 
@@ -199,19 +202,23 @@ def setYTicks(timeVals):
     ax.tick_params(axis='y', right=True, labelright=True)
 
 def correctYMinSkew(timeVals, maxTimeLim):
+    print("New call")
     minTime = min(timeVals)
 
+    # TODO Try to round down to nearest half hour?
     # 'Rounds down' minimum time limit to the nearest hour:
-    #minTimeLim = (minTimeLim // 60) * 60       # Using the ylim already generated
-    minTimeLim = (minTime // 60) * 60     # Using the lowest timeVal data point
+    minTimeLim = ((minTime // 60) * 60)     # Using the lowest timeVal data point
 
     print("Min time lim: " + str(minTimeLim) + " (" + str(timeValToTime(minTimeLim)) + ")")
 
-    if (minTimeLim < getTimeValue("23:00")):
-        print("Min time ytick and ylim changed")
-        minTimeLim = correctYMinSkew(timeVals.remove(minTime), maxTimeLim)  # Method recursively calls itself until minTimeLim >= 23:00
+    if (minTimeLim < getTimeValue(MIN_TIME_THRESHOLD)):
+        print("Minimum time rounded down (" + timeValToTime(minTimeLim) + ") is earlier than " + MIN_TIME_THRESHOLD)
+        timeVals.remove(minTime)
+        return correctYMinSkew(timeVals, maxTimeLim)  # Method recursively calls itself until minTimeLim >= 23:00
     else:
-        plt.ylim(minTimeLim, maxTimeLim)
+        print("Minimum time rounded down (" + timeValToTime(minTimeLim) + ") is above threshold!")
+        plt.ylim((minTimeLim - YTICK_OFFSET), (maxTimeLim + YTICK_OFFSET))
+        return minTimeLim
 
 
 def filterList(list):
