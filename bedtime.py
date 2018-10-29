@@ -122,7 +122,6 @@ def plotBedtimes(times, view):
         xLabels.append(date.strftime('%d/%m'))
         xTicks.append(i)
 
-
     # For weekly view (since last Monday):
     # TODO Optimise reversal of list for finding last Monday
     if (view == "weekly"):
@@ -142,6 +141,12 @@ def plotBedtimes(times, view):
         print(timeVals)
     else:
         plt.subplot(2, 1, 1)
+
+        # TODO Short term fix for no x ticks for all-time
+        # Gets current axes:
+        ax = plt.gca()
+        # Sets tick params of y axis to display ticks and tick labels on right side as well as left:
+        ax.tick_params(axis='x', bottom=False, labelbottom=False)  # Hide x ticks for all-time graph: the dates got messy with too many data points
 
     plt.xticks(xTicks, xLabels)
 
