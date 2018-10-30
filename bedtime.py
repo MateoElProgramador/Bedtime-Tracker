@@ -150,8 +150,11 @@ def plotBedtimes(times, view):
 
     plt.xticks(xTicks, xLabels)
 
-    plt.title(f"Average time: {timeValToTime(getAverageBedtime(timeVals))}")
+    averageBedtime = getAverageBedtime(timeVals)
+
+    plt.title(f"Average time: {timeValToTime(averageBedtime)}")
     plt.plot(xTicks, timeVals)
+    plt.axhline(averageBedtime, color='#00b300')    # Adds horizontal line to display average time!
 
     #print("Current y lim: " + str(plt.ylim()))
 
