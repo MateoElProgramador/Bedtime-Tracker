@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 TIMES_FILENAME = "times.txt"
 YTICK_OFFSET = 10
-MIN_TIME_THRESHOLD = "23:30"
+MIN_TIME_THRESHOLD = "23:00"
 
 def getTimeValue(time):
     #time = sanitiseTime(time)   # Sanitise time first
@@ -94,7 +94,8 @@ def main():
     if (times == []):
         print ("No times in file.")
     else:
-        plotBedtimes(times, "all")
+        #plotBedtimes(times, "all")
+        plotBedtimes(times, "monthly")
         plotBedtimes(times, "weekly")
         plt.show()
 
@@ -139,10 +140,25 @@ def plotBedtimes(times, view):
         timeVals = timeVals[lastMonPos:]
         print("New timeVals:")
         print(timeVals)
+
+    elif (view == "monthly"):
+        plt.subplot(2, 1, 1)  # Can't call with "all" & "monthly": same subplot
+        # Similar unoptimised method of finding last instance of attribute in list as weekly:
+        dayNums = [d.strftime('%d') for d in dates]
+        # Find position in dayNums where the latest, first day of the month features:
+        monthStartPos = (len(dayNums) - 1) - (list(reversed(dayNums)).index("01"))
+
+        # Slice lists to only account for since last Monday:
+        xTicks = xTicks[monthStartPos:]
+        xLabels = xLabels[monthStartPos:]
+        timeVals = timeVals[monthStartPos:]
+
     else:
         plt.subplot(2, 1, 1)
 
-        # TODO Short term fix for no x ticks for all-time
+        # TODO better solution for overlapping xticks
+
+        #Short term fix for no x ticks for all-time:
         # Gets current axes:
         ax = plt.gca()
         # Sets tick params of y axis to display ticks and tick labels on right side as well as left:
