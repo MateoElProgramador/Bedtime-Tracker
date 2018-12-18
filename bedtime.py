@@ -148,7 +148,7 @@ def plotBedtimes(times, view):
         # Find position in dayNums where the latest, first day of the month features:
         monthStartPos = (len(dayNums) - 1) - (list(reversed(dayNums)).index("01"))
 
-        # Slice lists to only account for since last Monday:
+        # Slice lists to only account for current month:
         xTicks = xTicks[monthStartPos:]
         xLabels = xLabels[monthStartPos:]
         timeVals = timeVals[monthStartPos:]
@@ -235,7 +235,7 @@ def correctYMinSkew(timeVals, maxTimeLim):
 
     print("Min time lim: " + str(minTimeLim) + " (" + str(timeValToTime(minTimeLim)) + ")")
 
-    if (minTimeLim < getTimeValue(MIN_TIME_THRESHOLD)):
+    if ((minTimeLim < getTimeValue(MIN_TIME_THRESHOLD)) and (len(timeVals) > 7)):   # Will not fire for weekly graph, or any small dataset.
         print("Minimum time rounded down (" + timeValToTime(minTimeLim) + ") is earlier than " + MIN_TIME_THRESHOLD)
         timeVals.remove(minTime)
         return correctYMinSkew(timeVals, maxTimeLim)  # Method recursively calls itself until minTimeLim >= 23:00
